@@ -51,7 +51,7 @@ def main():
         precision = (results>0.7).mean()
         samples.append(precision)
     samples = np.array(samples)
-    bs_ret = bs.bootstrap(samples, stat_func=bs_stats.mean)
+    bs_ret = bs.bootstrap(samples, stat_func=bs_stats.mean, alpha=0.05)
     print(bs_ret)
 
 if __name__ == "__main__":

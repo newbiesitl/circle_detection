@@ -13,9 +13,30 @@ Due to this, I would like to choose a smooth function for our algorithm to optim
 * euclidean_distance_loss : the eculidean distance between predicted circle centre and target circle centre
 * Mean squared error : to calculate the mismatch loss of predicted circle radius and target circle radius, the reason i choose MSE here is because I want to penalize the model to predict prior (average, median etc) and I also pretty sure there's no outliers in the data (I also know the data generation process).
 
-# Model architecture
+## Network architecture
 ![CNN](https://user-images.githubusercontent.com/6015707/66263041-48e18180-e7a1-11e9-9ef5-78963c6be7d4.png)
 
 Multi-filter CNN with fully connected layers, "relu" astivation for both CNN and dense and output layers.
 Use batch normalization, dropout to improve model performance and training converge speed.
 Regarding to CNN layer, I use multi filter CNN for encoding, I choose two filter sizes 3 and 10, the benefits of multi size filters are for example capture different granularity features. 
+
+## Model design
+I use the CNN network to map raw image to signals, in this example I defined two signals, one is circle centre, another one is radius length.
+I built two models to predict two objectives separately, of course there are many ways to do this like combine multiple losses in same loss function etc, I'll leave this to future work. 
+In this example each model is about 1Mb big.
+
+## Model training
+I train model with noise level = 2 generated data , data are random sampled from data generator. The sampling process can be improved to shorten the training process, I'll leave this to future work.
+
+## Inference and evaluation
+During inference I use the data generator to generate images at noise level 2 to predict circle parameters, two models predicts centre and radius independently. I then pass the circle parameter to `iou` evaluation function to calculate the overlap percentage. 
+
+## Results
+With 2 models trained with random generated data, I ran 30 independent experiments, each experiment predicts 100 images, with 30 trails, I calculate bootstrap confidence interval at confidence level 95, the result I got for average precision@0.7 is:
+
+| average precisoin@0.7 | 95 ci of lower and upper average precision@0.7 |
+| ------------- | ------------- |
+| 0.917    | (0.9066666666666667, 0.9273333333333333) |
+
+
+
