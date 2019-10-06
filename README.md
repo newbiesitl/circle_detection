@@ -45,4 +45,18 @@ With the method I achieved 0.95 precision (only tried one configuration)
 
 The value of this approach, I can use this method to generate labels if I dont know the data generate process, then use Hough Generated labels to train CNN classifier (Hough is slow, CNN is faster during inference). By doing this, I "bootstrapped" a machine learning application with no labelled data. 
 
-
+## Future works
+1. Improve loss function, it's always good to optimize the metric directly, because in this example, training loss is not linear correlated with problem metric, I can convert the problem metric to training metric, there are few ways to do it, one way is to use TF to define the gradient of discontinuous points (https://www.tensorflow.org/guide/create_op). 
+2. Improve sampling strategy to speed up training process, I can use the trained network to produce a distribution of prediction using for example Monte Carlo Dropout [1]. I can use some statistics of prediction distribution to rank unlabelled data for labelling, one statistic i can use is the standard deviation of prediction, for example in this case I can produce the prediction in the form of:
+    1. circle centre x:  25+-2.5
+    2. circle radius: 17 +- 10
+ and I only query the label for high uncertainty labels (high std) to train the model, in NLP this will speed up training (save labels) up to 90%.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ [1]: 
+Gal, Yarin, and Zoubin Ghahramani. "Dropout as a bayesian approximation: Representing model uncertainty in deep learning." international conference on machine learning. 2016."
