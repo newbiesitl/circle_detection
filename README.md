@@ -1,28 +1,27 @@
 # Circle detector 
 ## Problem definition
-The goal in this example is to maximize the overlaps between predicted circle parameters and target circle parameters from noised images. Evaluation is precision @ at least 70% area are overlapped, targeted benchmark is 0.90 precision@0.7.
+In this example the objective is to maximize the overlaps between predicted circle parameters and target circle parameters, the circle parameter is prediceted from noised images. Evaluation metric precision of at least 70% area of predicted circle and target circle are overlapped, targeted benchmark is 0.90 precision@0.7.
  
 ## Loss function
-The function to determine the area of two overlapped circles can be found (https://www.xarg.org/2016/07/calculate-the-intersection-points-of-two-circles/). The function is not continuous across the parameter dimensions, there are few conditions (points) that are not differentiable, to demonstrate, let r1 be radius of first circle, let r2 be radius of second circle, let d be distance between two circle centroid:
+The method to determine the area of two overlapped circles can be found at (https://www.xarg.org/2016/07/calculate-the-intersection-points-of-two-circles/). The function is not continuous across the parameter dimensions, there are few conditions (points) that are not differentiable, to demonstrate, let r1 be radius of first circle, let r2 be radius of second circle, let d be distance between two circle centroid:
 1. r1 + r2 \< d, no overlap between two circles (or tangent of two circles)
 2. |r1 - r2| \< d, two circle intersected 
 
 Although there are many ways to incorporate an non differentiable function in differentiable parameter trainings for example manually define the gradient of each disconnected point. But I'll leave this to future works.
 
 Due to this, I would like to choose a smooth function for our algorithm to optimize. In this case, I choose the loss for shortening the distance between circle parameters (positive correlate with metric). Here I choose two loss functions for two different type of circle parameters:
-* euclidean_distance_loss : the eculidean distance between predicted circle centre and target circle centre
-* Mean squared error : to calculate the mismatch loss of predicted circle radius and target circle radius, the reason i choose MSE here is because I want to penalize the model to predict prior (average, median etc) and I also pretty sure there's no outliers in the data (I also know the data generation process).
+* euclidean_distance_loss : the eculidean distance measures the distance between predicted circle centre and target circle centre
+* Mean squared error : MSE is used to match predicted circle radius with target circle radius, the reason i choose MSE here is because I want to penalize the model to predict prior (average, median etc) and I also pretty sure there's no outliers in the data (I also know the data generation process).
 
 ## Network architecture
 ![CNN](https://user-images.githubusercontent.com/6015707/66263041-48e18180-e7a1-11e9-9ef5-78963c6be7d4.png)
 
-Multi-filter CNN with fully connected layers, "relu" astivation for both CNN and dense and output layers.
-Use batch normalization, dropout to improve model performance and training converge speed.
-Regarding to CNN layer, I use multi filter CNN for encoding, I choose two filter sizes 3 and 10, the benefits of multi size filters are for example capture different granularity features. 
+Multi-filter CNN with fully connected layers, "relu" astivation for both CNN and dense and output layers. Batch normalization and dropout are used to improve model performance and training convergence speed.
+Regarding to CNN layer, I use multi filter CNN for encoding, I choose two filter sizes 3 and 10, the benefits of multi size filters are multi folded, for example one benefit is multiple size filters capture different granularity features. 
 
 ## Model design
 I use the CNN network to map raw image to signals, in this example I defined two signals, one is circle centre, another one is radius length.
-I built two models to predict two objectives separately, of course there are many ways to do this like combining multiple losses in same loss function etc, I'll leave this to future work. 
+I built two models to predict two objectives independently, of course there are many ways to do this like combining multiple losses in same loss function etc, I'll leave this to future work. 
 In this example each model is about 1Mb big.
 
 ## Model training
@@ -38,15 +37,16 @@ With 2 models trained with random generated data, I ran 30 independent experimen
 | ------------- | ------------- | ------------- |
 | 0.917    | 0.9066666666666667 | 0.9273333333333333 |
 
+So I'm 95% confidence that this predictor will achieve precision between 0.90 and 0.92 on real population / deployed in production (if data generation process doesn't change, there's method to detect that, I'll leave this for future discussion)
 
 ## Additional results
 I also tried a denoising-autoencoder with Hough Transform approach to calculate circle parameters, I trained a denoising autoencoder to denoise the image from noise lvl 2 to normal image, then use Hough Transform to calculate from denoised image.
 With the method I achieved 0.95 precision (only tried one configuration)
 
-The value of this approach, I can use this method to generate labels if I dont know the data generate process, then use Hough Generated labels to train CNN classifier (Hough is slow, CNN is faster during inference). By doing this, I "bootstrapped" a machine learning application with no labelled data. 
+The value of this approach is I can use this method to generate labels if I dont know the data generate process, I use Hough Generated labels to train CNN classifier (people may ask why not just use Hough? There are many reasons, first there's no GPU implementation of that, hard to speed up with GPU hardwards, 2nd Hough is slow, CNN is faster during inference). By doing this, I "bootstrapped" a machine learning application with no labelled data. 
 
 ## Future works
-1. Improve loss function, it's always good to optimize the metric directly, because in this example, training loss is not linear correlated with problem metric, I can convert the problem metric to training metric, there are few ways to do it, one way is to use TF to define the gradient of discontinuous points (https://www.tensorflow.org/guide/create_op). 
+1. Improve loss function, it's always good to optimize the metric directly, and in this example, training loss is not linear correlated with problem metric, in make the optimization process simpler, I can convert the problem metric to training metric, there are few ways to do it, one way is to use TF to define the gradient of discontinuous points (https://www.tensorflow.org/guide/create_op). 
 2. Improve sampling strategy to speed up training process, I can use the trained network to produce a distribution of prediction using for example Monte Carlo Dropout [1]. I can use some statistics of prediction distribution to rank unlabelled data for labelling, one statistic i can use is the standard deviation of prediction, for example in this case I can produce the prediction in the form of:
     1. circle centre x:  25+-2.5
     2. circle radius: 17 +- 10
