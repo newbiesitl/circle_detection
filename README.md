@@ -34,9 +34,9 @@ During inference I use the data generator to generate images at noise level 2 to
 ## Results
 With 2 models trained with random generated data, I ran 30 independent experiments, each experiment predicts 100 images, with 30 trails, I calculate bootstrap confidence interval at confidence level 95, the result I got for average precision@0.7 is:
 
-| average precisoin@0.7 | 95 ci of lower and upper average precision@0.7 |
-| ------------- | ------------- |
-| 0.917    | (0.9066666666666667, 0.9273333333333333) |
+| average precisoin@0.7 | lower 95 ci | upper 95 ci |
+| ------------- | ------------- | ------------- |
+| 0.917    | 0.9066666666666667 | 0.9273333333333333 |
 
 
 
