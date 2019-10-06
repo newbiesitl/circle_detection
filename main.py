@@ -44,8 +44,7 @@ def main():
                 np.array([np.expand_dims(img, -1)]),
                 np.array([np.expand_dims(img, -1)]),
             ])[0]
-            detected = [detected_center.tolist()[-1], detected_center.tolist()[0]]+detected_radius.tolist()
-            detected = [detected[1], detected[0], detected[2]]
+            detected = [detected_center.tolist()[0], detected_center.tolist()[1]]+detected_radius.tolist()
             ret = iou(params, detected)
             results.append(ret)
         results = np.array(results)

@@ -63,7 +63,7 @@ def multi_filter_cnn(output_dim=2):
 
 
 
-def build_center_predictor():
+def build_center_predictor(epoch=50):
     from keras.utils.generic_utils import get_custom_objects
     get_custom_objects().update({"euclidean_distance_loss": euclidean_distance_loss})
     # m = cnn_rg()
@@ -81,7 +81,7 @@ def build_center_predictor():
     from task_env import get_samples
     buffer_size = 50
     bs_buffer = []
-    while True:
+    while epoch:
         np.random.seed(None)
         X = []
         X_prime = []
@@ -111,9 +111,10 @@ def build_center_predictor():
                 bs_buffer.pop(-1)
         bs_ret = bs.bootstrap(np.array(bs_buffer), stat_func=bs_stats.mean)
         print(bs_ret)
+        epoch -= 1
 
 
-def build_radius_predictor():
+def build_radius_predictor(epoch=50):
     # m = cnn_rg()
     train_new = False
     try:
@@ -129,7 +130,7 @@ def build_radius_predictor():
     from task_env import get_samples
     buffer_size = 50
     bs_buffer = []
-    while True:
+    while epoch:
         np.random.seed(None)
         X = []
         X_prime = []
@@ -164,11 +165,10 @@ def build_radius_predictor():
 
         bs_ret = bs.bootstrap(np.array(bs_buffer), stat_func=bs_stats.mean)
         print(bs_ret)
+        epoch -= 1
 
 if __name__ == "__main__":
     import tensorflow as tf
 
-    with tf.device('/cpu'):
-        build_center_predictor()
-    with tf.device('/cpu'):
-        build_radius_predictor()
+    build_center_predictor()
+    build_radius_predictor()
