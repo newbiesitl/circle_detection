@@ -39,4 +39,10 @@ With 2 models trained with random generated data, I ran 30 independent experimen
 | 0.917    | 0.9066666666666667 | 0.9273333333333333 |
 
 
+## Additional results
+I also tried a denoising-autoencoder with Hough Transform approach to calculate circle parameters, I trained a denoising autoencoder to denoise the image from noise lvl 2 to normal image, then use Hough Transform to calculate from denoised image.
+With the method I achieved 0.95 precision (only tried one configuration)
+
+The value of this approach, I can use this method to generate labels if I dont know the data generate process, then use Hough Generated labels to train CNN classifier (Hough is slow, CNN is faster during inference). By doing this, I "bootstrapped" a machine learning application with no labelled data. 
+
 

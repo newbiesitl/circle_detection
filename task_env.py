@@ -1,3 +1,12 @@
+'''
+Project name
+
+Description:
+
+Author: Charles Zhou
+Date: 2019-10-05
+'''
+
 import numpy as np
 from shapely.geometry import Point
 from skimage.draw import circle_perimeter_aa
