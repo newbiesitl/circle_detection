@@ -22,7 +22,7 @@ Regarding to CNN layer, I use multi filter CNN for encoding, I choose two filter
 
 ## Model design
 I use the CNN network to map raw image to signals, in this example I defined two signals, one is circle centre, another one is radius length.
-I built two models to predict two objectives separately, of course there are many ways to do this like combine multiple losses in same loss function etc, I'll leave this to future work. 
+I built two models to predict two objectives separately, of course there are many ways to do this like combining multiple losses in same loss function etc, I'll leave this to future work. 
 In this example each model is about 1Mb big.
 
 ## Model training
@@ -54,7 +54,15 @@ The value of this approach, I can use this method to generate labels if I dont k
  
  
  
- 
+## How to run
+- Unzip the file
+- Install Anaconda
+- `cd circle_detection`
+- `conda create -n circle_detect python=3.5`
+- `conda activate circle_detect`
+- `pip install -r requirements.txt`
+- If you want to train a model from scratch: `python build_models.py`
+- Run evaluation `python main.py`
  
  
  
