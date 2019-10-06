@@ -7,8 +7,8 @@ Author: Charles Zhou
 Date: 2019-10-05
 '''
 
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, Flatten, BatchNormalization, Dropout, concatenate
-from keras.models import Model, Sequential, load_model
+from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Flatten, BatchNormalization, Dropout, concatenate
+from keras.models import Model, load_model
 import numpy as np
 from global_config import INPUT_SHAPE
 import keras.backend as K
@@ -66,7 +66,6 @@ def multi_filter_cnn(output_dim=2):
 def build_center_predictor(epoch=50):
     from keras.utils.generic_utils import get_custom_objects
     get_custom_objects().update({"euclidean_distance_loss": euclidean_distance_loss})
-    # m = cnn_rg()
     train_new = False
     try:
         if train_new:
@@ -93,7 +92,6 @@ def build_center_predictor(epoch=50):
                 x_prime = np.expand_dims(x_prime, -1)
                 X_prime.append(x_prime)
             x = np.expand_dims(x, -1)
-            # single channel
             X.append(x)
             Y.append(y[:2])
         Y = np.array(Y)
@@ -104,7 +102,6 @@ def build_center_predictor(epoch=50):
             X_prime,
         ], Y, epochs=1, validation_split=0.1, batch_size=32, shuffle=True, verbose=1)
         m.save('c_center.h5')
-        # print(history.history.keys())
         for i in range(len(history.history['val_loss'])):
             bs_buffer.insert(0, history.history['val_loss'][i])
             while len(bs_buffer) > buffer_size:
@@ -115,7 +112,6 @@ def build_center_predictor(epoch=50):
 
 
 def build_radius_predictor(epoch=50):
-    # m = cnn_rg()
     train_new = False
     try:
         if train_new:
@@ -142,7 +138,6 @@ def build_radius_predictor(epoch=50):
                 x_prime = np.expand_dims(x_prime, -1)
                 X_prime.append(x_prime)
             x = np.expand_dims(x, -1)
-            # single channel
             X.append(x)
             Y.append(y[-1:])
 
@@ -168,7 +163,5 @@ def build_radius_predictor(epoch=50):
         epoch -= 1
 
 if __name__ == "__main__":
-    import tensorflow as tf
-
     build_center_predictor()
     build_radius_predictor()
