@@ -1,0 +1,4 @@
+CHANNEL = 1
+edge = 200
+RADIUS = 50
+INPUT_SHAPE = (edge, edge, CHANNEL)
